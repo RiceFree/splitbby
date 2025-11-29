@@ -1,7 +1,7 @@
 import { Platform, StyleSheet } from 'react-native';
 
 export const Colors = {
-  primary: '#0a7ea4',
+  primary: '#5ec436ff',
   background: '#ffffff',
   text: '#11181C',
   muted: '#687076',
@@ -24,7 +24,7 @@ const baseInput = {
   backgroundColor: Colors.background,
 };
 
-const global = StyleSheet.create({
+export const global = StyleSheet.create({
   // Layout
   container: {
     flex: 1,

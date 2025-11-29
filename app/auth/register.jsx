@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as Yup from 'yup';
 import { supabase } from "../../src/supabase/client";
+import global from '../../styles/globalStyles';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -73,11 +74,11 @@ export default function Register() {
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
         <View style={styles.container}>
-          <Text style={styles.title}>Create Account</Text>
+          <Text style={[global.title, {marginBottom: 20, textAlign: 'center',}] }>Create Account</Text>
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={global.label}>Email</Text>
           <TextInput
-            style={[styles.input, touched.email && errors.email && styles.inputError]}
+            style={[global.input, touched.email && errors.email && global.inputError]}
             placeholder="Enter your email"
             onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
@@ -87,12 +88,12 @@ export default function Register() {
             editable={!loading}
           />
           {touched.email && errors.email && (
-            <Text style={styles.error}>{errors.email}</Text>
+            <Text style={global.error}>{errors.email}</Text>
           )}
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={global.label}>Password</Text>
           <TextInput
-            style={[styles.input, touched.password && errors.password && styles.inputError]}
+            style={[global.input, touched.password && errors.password && gloabl.inputError]}
             placeholder="Enter password"
             onChangeText={handleChange('password')}
             onBlur={handleBlur('password')}
@@ -101,12 +102,12 @@ export default function Register() {
             editable={!loading}
           />
           {touched.password && errors.password && (
-            <Text style={styles.error}>{errors.password}</Text>
+            <Text style={global.error}>{errors.password}</Text>
           )}
 
-          <Text style={styles.label}>Confirm Password</Text>
+          <Text style={global.label}>Confirm Password</Text>
           <TextInput
-            style={[styles.input, touched.confirmPassword && errors.confirmPassword && styles.inputError]}
+            style={[global.input, touched.confirmPassword && errors.confirmPassword && global.inputError]}
             placeholder="Confirm password"
             onChangeText={handleChange('confirmPassword')}
             onBlur={handleBlur('confirmPassword')}
@@ -115,18 +116,24 @@ export default function Register() {
             editable={!loading}
           />
           {touched.confirmPassword && errors.confirmPassword && (
-            <Text style={styles.error}>{errors.confirmPassword}</Text>
+            <Text style={global.error}>{errors.confirmPassword}</Text>
           )}
-
-          <Button
-            title={loading ? 'Creating Account...' : 'Register'}
-            onPress={handleSubmit}
+          
+          <Pressable
+            style={loading ? [global.button, { opacity: 0.6 }] : global.button}
+            onPress={() => {
+              if (!loading) handleSubmit();
+            }}
             disabled={loading}
-          />
+          >
+            <Text style={global.buttonText}>
+              {loading ? "Creating Account..." : "Register"}
+            </Text>
+          </Pressable>
 
-          {msg ? <Text style={styles.message}>{msg}</Text> : null}
+          {msg ? <Text style={global.message}>{msg}</Text> : null}
 
-          <Text style={styles.link} onPress={() => router.push('/auth/login')}>
+          <Text style={[global.link, { textAlign: "center", marginTop: 20 }]} onPress={() => router.push('/auth/login')}>
             Already have an account? Login
           </Text>
         </View>
@@ -140,40 +147,5 @@ const styles = StyleSheet.create({
     padding: 20,
     flex: 1,
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 4,
-    fontSize: 16,
-  },
-  inputError: {
-    borderColor: '#ff4444',
-  },
-  error: {
-    color: '#ff4444',
-    fontSize: 12,
-    marginBottom: 8,
-  },
-  link: {
-    color: '#0a7ea4',
-    marginTop: 20,
-    textAlign: 'center',
-    fontSize: 14,
-    textDecorationLine: 'underline',
   },
 });
