@@ -27,7 +27,7 @@ export default function Login() {
       } else if (data?.session) {
         setMsg('Login successful');
         // navigate to expenses (app expects authenticated users there)
-        router.replace('/expenses');
+        router.replace('/households');
       } else {
         // No error but also no session -> show message
         setMsg('Login did not return a session. Check email confirmation or credentials.');

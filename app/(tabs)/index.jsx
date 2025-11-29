@@ -15,14 +15,15 @@ supabase.auth.getSession().then(({ data }) => {
 setSession(data.session);
 setLoading(false);
 if (!data.session) router.replace('/auth/login');
-else router.replace('/expenses');
+else router.replace('/dashboard');
 });
 
 
 const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-setSession(session);
-if (!session) router.replace('/auth/login');
-else router.replace('/expenses');
+	setSession(session);
+	// If the user signs out, redirect to login. When signing in, don't force a specific
+	// page so in-app navigation (e.g. /households/add) isn't interrupted.
+	if (!session) router.replace('/auth/login');
 });
 
 
