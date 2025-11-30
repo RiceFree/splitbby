@@ -53,18 +53,45 @@ export default function HouseholdCard({ item, onDelete }) {
           text: 'Delete',
           onPress: async () => {
             try {
-              const { data, error } = await supabase
-                .from('households')
-                .delete()
-                .eq('id', householdId)
-                .select();
+                // If the user is the creator of the Household, allow deletion
+                // otherwise just remove them from the household members
+                const { data: { user } } = await supabase.auth.getUser();
+                const { isCreator, error } = await supabase
+                    .from('household_members')
+                    .select('*')
+                    .eq('household_id', item.id)
+                    .eq('user_id', user.id)
+                    .eq('role', 'creator');
+                
+                if (error || !isCreator) {
+              
+                    const { data, error } = await supabase
+                        .from('household_members')
+                        .delete()
+                        .eq('household_id', householdId)
+                        .eq('user_id', user.id)
+                        .select();
+                    if (error) {
+                        Alert.alert('Error', error.message || 'Failed to leave household');
+                    } else {
+                        Alert.alert('Success', 'You are no longer a member of this household');
+                        onDelete?.(householdId);
+                    }
+                    return;
+                }
+        
+                const { data, error: houseHoldError } = await supabase
+                    .from('households')
+                    .delete()
+                    .eq('id', householdId)
+                    .select();
 
-              if (error) {
-                Alert.alert('Error', error.message || 'Failed to delete household');
-              } else {
-                Alert.alert('Success', 'Household deleted successfully');
-                onDelete?.(householdId);
-              }
+                if (houseHoldError) {
+                    Alert.alert('Error', houseHoldError.message || 'Failed to delete household');
+                } else {
+                    Alert.alert('Success', 'Household deleted successfully');
+                    onDelete?.(householdId);
+                }
             } catch (e) {
               Alert.alert('Error', e.message || 'Unexpected error occurred');
             }

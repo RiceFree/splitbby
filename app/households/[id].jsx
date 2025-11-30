@@ -1,4 +1,4 @@
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -17,9 +17,10 @@ export default function DetailHousehold() {
 
   const [household, setHousehold] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState('');
 
-  const handeAddMember = () => {
-    return;;
+  const handleAddMember = () => {
+    return;
   }
 
   const loadHousehold = useCallback(async () => {
@@ -36,6 +37,18 @@ export default function DetailHousehold() {
           setHousehold(null);
         } else {
           setHousehold(data);
+        }
+        const { data: loggedUser, error: userError } = await supabase.auth.getUser();
+        // retieve role of logged in user
+        const { data: memberData, error: memberError } = await supabase
+          .from('household_members')
+          .select('role')
+          .eq('household_id', id)
+          .eq('user_id', loggedUser.user.id)
+          .single();
+        if (!memberError) {
+          setRole(memberData.role);
+          console.log('User role:', memberData.role);
         }
   
         
@@ -57,11 +70,16 @@ export default function DetailHousehold() {
       <View style={global.container}>
         <View style={{ height: 60, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={global.title}>{household.name}</Text>
-           <Pressable
-                  onPress={() => { if (!loading) handleAddMember(); }}
-                >
-                  <AddMemberIcon size={28} color={Colors.primary} />
-                </Pressable>
+          {role === 'creator' && (
+            <Pressable
+                    onPress={() => router.push({
+                      pathname: '/households/addMember',
+                      params: { householdId: household.id }
+                    })}
+                  >
+                    <AddMemberIcon size={28} color={Colors.primary} />
+              </Pressable>
+          )}
         </View>
       </View>
     </AuthenticatedLayout>

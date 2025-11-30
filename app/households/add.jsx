@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 import AuthenticatedLayout from '../../components/authenticated-layout';
 import { supabase } from '../../src/supabase/client';
 import global from '../../styles/globalStyles';
@@ -78,7 +78,7 @@ export default function AddHousehold() {
 
   return (
     <AuthenticatedLayout>
-      <View style={styles.container}>
+      <View style={global.container}>
         <Text style={global.title}>Add Household</Text>
         <Text style={global.label}>Name</Text>
         <TextInput
@@ -100,8 +100,4 @@ export default function AddHousehold() {
     </AuthenticatedLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-});
 
